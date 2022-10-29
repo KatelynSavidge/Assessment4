@@ -1,3 +1,5 @@
+const database = []
+
 module.exports = {
 
     getCompliment: (req, res) => {
@@ -11,27 +13,56 @@ module.exports = {
     },
 
     getFortune: (req, res) => {
-        const fortune = ["A fresh start will put you on your way.", "A golden egg of opportunity falls into your lap this month.", "You are right where you need to be.", "Pick battles big enough to matter, small enough to win."];
+        const fortunes = ["A fresh start will put you on your way.", "A golden egg of opportunity falls into your lap this month.", "You are right where you need to be.", "Pick battles big enough to matter, small enough to win."];
       
-        let randomize = Math.floor(Math.random() * fortune.length);
-        let randomFortune = fortune[randomize];
+        let randomIndex = Math.floor(Math.random() * fortunes.length);
+        let randomFortune = fortunes[randomIndex];
       
         res.status(200).send(randomFortune);
     },
 
-    getFamousQuote: (req, res) => {
-        const quote = ["“Learn as if you will live forever, live like you will die tomorrow.” — Mahatma Gandhi"];
-      
-        res.status(200).send(quote);
+    newSong: (req,res) => {
+        const song = req.body.song
+        const album = req.body.album
+
+        let highestId = 0
+        for (let i = 0; i < database.length; i++) {
+             if (database[i].id > highestId) {
+                 highestId = database[i].id
+             }
+        }
+        highestId++
+
+        let newEntry = {
+            song: song,
+            album: album,
+            id: highestId,
+        }
+
+        database.push(newEntry)
+        console.log(database)
+        res.status(200).send(database)
     },
 
-    getCat: (req, res) => {
-        const fortune = ["https://www.nj.com/resizer/mg42jsVYwvbHKUUFQzpw6gyKmBg=/1280x0/smart/advancelocal-adapter-image-uploads.s3.amazonaws.com/image.nj.com/home/njo-media/width2048/img/somerset_impact/photo/sm0212petjpg-7a377c1c93f64d37.jpg", "https://www.vets4pets.com/siteassets/species/cat/cat-on-fence.jpg?w=585&scale=down", "https://th.bing.com/th/id/R.43b3733de3bbc28bece972597fddd178?rik=cj%2ftzFzDzSNzSQ&riu=http%3a%2f%2f3.bp.blogspot.com%2f-icRUNzUAego%2fUSWC9OcRp5I%2fAAAAAAAAIWU%2fNSi-9HErIfU%2fs1600%2f1970_hd_cat_wallpaper.gif&ehk=Ja0Oy8XQA4YEbNv9WTTLQHwPV2PvKAIdrUjxhciP3VE%3d&risl=&pid=ImgRaw&r=0"];
-      
-        let catPic = Math.floor(Math.random() * fortune.length);
-        let randomCat = fortune[catPic];
-      
-        res.status(200).send(randomCat);
+    deleteSong: (req,res) => {
+        let id = +req.params.id
+        for (let i=0; i<database.length; i++) {
+            if (database[i].id === id) {
+                database.splice(i, 1)
+            }
+        }
+        res.status(200).send(database)
+    },
+
+    updateSong: (req,res) => {
+        const id = req.body.id
+        const updatedSongName = req.body.song
+        for (let i=0; i<database.length; i++) {
+            if (database[i].id == id) {
+                database[i].song = updatedSongName
+            }
+        }
+        res.status(200).send(database)
     },
 
 } 
